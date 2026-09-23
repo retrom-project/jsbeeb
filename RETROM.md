@@ -11,6 +11,10 @@ It deliberately excludes `public/roms`, `public/discs`, `public/tapes`,
 are still copyrighted and are not under the project's GPL license. Retrom
 must provide the user's BBC ROMs and selected disk through its content and
 BIOS inputs. No included game or ROM should be published as a Provider asset.
+In `?retrom=1` mode, ROM requests read the exact `roms/...` byte entries from
+the same-origin parent frame's `RetromJsbeebBios` map. Missing entries fail
+closed. The Provider must populate this map from verified user BIOS inputs
+before loading the child page and clear it when the session ends.
 
 The page exposes `window.RetromJsbeeb` only with `?retrom=1`. Its checkpoint
 is jsbeeb's versioned snapshot compressed with gzip. Media from `blob:` URLs

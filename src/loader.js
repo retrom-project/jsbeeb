@@ -58,6 +58,18 @@ export function loadData(url) {
     if (runningInNode) {
         return loadDataNode(url);
     } else {
+        if (
+            window.location.search &&
+            new URLSearchParams(window.location.search).get("retrom") === "1" &&
+            /^roms\/[A-Za-z0-9_./-]+$/.test(url) &&
+            url.split("/").every((part) => part !== "." && part !== "..")
+        ) {
+            const bios = window.parent.RetromJsbeebBios?.[url];
+            if (!ArrayBuffer.isView(bios) || !bios.byteLength || bios.byteLength > 1024 * 1024) {
+                return Promise.reject(new Error("JSBEEB_BIOS_MISSING"));
+            }
+            return Promise.resolve(new Uint8Array(bios.buffer, bios.byteOffset, bios.byteLength).slice());
+        }
         return loadDataHttp(url);
     }
 }
