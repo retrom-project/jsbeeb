@@ -34,11 +34,12 @@ export function createRetromBridge({ processor, model, media, snapshots, loop, v
             }
         },
         async restore(bytes) {
-            if (!(bytes instanceof Uint8Array) || !bytes.length || bytes.length > MaxCheckpointBytes)
+            if (!ArrayBuffer.isView(bytes) || !bytes.byteLength || bytes.byteLength > MaxCheckpointBytes)
                 throw new Error("JSBEEB_CHECKPOINT_INVALID");
+            const state = new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength);
             const release = loop.pause("Retrom restore");
             try {
-                const decompressed = await transform(bytes, new DecompressionStream("gzip"));
+                const decompressed = await transform(state, new DecompressionStream("gzip"));
                 if (!decompressed.byteLength || decompressed.byteLength > MaxCheckpointBytes)
                     throw new Error("JSBEEB_CHECKPOINT_INVALID");
                 await snapshots.restore(snapshotFromJSON(decoder.decode(decompressed)));
