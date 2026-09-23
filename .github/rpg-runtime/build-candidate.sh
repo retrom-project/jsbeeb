@@ -21,7 +21,7 @@ trap 'rm -rf "$work"' EXIT INT TERM
 mkdir -p "$work/site"
 # ROMs, discs, tapes, teletext, and Econet media are supplied through Retrom's
 # content and BIOS inputs. None of those upstream sample/proprietary files ship.
-cp -a dist/index.html dist/assets dist/images dist/sounds dist/favicon.ico "$work/site/"
+cp -a dist/index.html dist/assets dist/images dist/sounds dist/favicon.ico dist/jsbeeb-icon.png "$work/site/"
 find "$work/site" -type f -name '*.map' -delete
 (
   cd "$work/site"
