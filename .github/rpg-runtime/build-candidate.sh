@@ -27,6 +27,7 @@ find "$work/site" -type f -name '*.map' -delete
   cd "$work/site"
   find . -type f -print0 | sort -z > "$work/site-files"
   tar --null --verbatim-files-from -T "$work/site-files" \
+    --format=ustar \
     --mtime='@0' --owner=0 --group=0 --numeric-owner \
     --mode='u+rwX,go+rX,go-w' -cf "$work/site.tar"
 )
