@@ -26,6 +26,14 @@ describe("UrlState", () => {
         expect(state.params.autoboot).toBe(true);
     });
 
+    it("keeps Retrom fragment settings out of HTTP query strings", () => {
+        const state = new UrlState(location("", "#retrom=1&disc1=game.ssd"), history);
+        state.set({ autoboot: true });
+        expect(state.url()).toBe("https://bbc.example/play#retrom=1&disc1=game.ssd&autoboot");
+        expect(state.urlWith({ disc1: "other.ssd" })).toContain("#retrom=1&disc1=other.ssd");
+        expect(history.pushState).toHaveBeenCalledWith(null, null, state.url());
+    });
+
     it("pushes the current parameters onto the history as the page's URL", () => {
         const state = new UrlState(location("?model=Master"), history);
         state.params.disc1 = "sth:Elite.zip";

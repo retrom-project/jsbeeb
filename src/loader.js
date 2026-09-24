@@ -59,8 +59,8 @@ export function loadData(url) {
         return loadDataNode(url);
     } else {
         if (
-            window.location.search &&
-            new URLSearchParams(window.location.search).get("retrom") === "1" &&
+            (new URLSearchParams(window.location.search).get("retrom") === "1" ||
+                new URLSearchParams(window.location.hash.slice(1)).get("retrom") === "1") &&
             /^roms\/[A-Za-z0-9_./-]+$/.test(url) &&
             url.split("/").every((part) => part !== "." && part !== "..")
         ) {

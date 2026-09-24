@@ -17,6 +17,12 @@ describe("Retrom external BIOS", () => {
         expect(window.RetromJsbeebBios["roms/os.rom"][0]).toBe(1);
     });
 
+    it("loads an authorized ROM when Retrom settings are in the URL fragment", async () => {
+        window.history.replaceState({}, "", "/#retrom=1&disc1=game.ssd");
+        window.RetromJsbeebBios = { "roms/os.rom": new Uint8Array([4, 5, 6]) };
+        expect(await loadData("roms/os.rom")).toEqual(new Uint8Array([4, 5, 6]));
+    });
+
     it("fails closed when a required ROM was not supplied", async () => {
         window.history.replaceState({}, "", "/?retrom=1");
         await expect(loadData("roms/BASIC.ROM")).rejects.toThrow("JSBEEB_BIOS_MISSING");
