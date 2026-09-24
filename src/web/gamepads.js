@@ -1,13 +1,9 @@
 import { BBC } from "../keymap.js";
 
-function isFirefox() {
-    // With thanks to http://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
-    return typeof InstallTrigger !== "undefined"; // Firefox 1.0+
-}
-
 export class GamePad {
     constructor() {
         this.gamepad0 = null;
+        this.selectedIndex = null;
 
         //this.gamepadMapping = [BBC.COLON_STAR, BBC.X, BBC.SLASH, BBC.Z,
         //    BBC.SPACE, BBC.SPACE, BBC.SPACE, BBC.SPACE,
@@ -166,49 +162,37 @@ export class GamePad {
     }
 
     update(sysvia) {
-        // init gamepad
-        // gamepad not necessarily available until a button press
-        // so need to check gamepads[0] continuously
-        if (navigator.getGamepads && !this.gamepad0) {
-            const gamepads = navigator.getGamepads();
-            this.gamepad0 = gamepads[0];
-
+        const gamepads = navigator.getGamepads?.() ?? [];
+        let selected = [...gamepads].find((pad) => pad?.connected && pad.index === this.selectedIndex);
+        if (!selected) {
             if (this.gamepad0) {
-                console.log("initing gamepad");
-                // 16 buttons
-                this.gamepadButtons = [
-                    false,
-                    false,
-                    false,
-                    false,
-                    false,
-                    false,
-                    false,
-                    false,
-                    false,
-                    false,
-                    false,
-                    false,
-                    false,
-                    false,
-                    false,
-                    false,
-                ];
-
-                // two joysticks (so 4 axes)
+                for (let i = 0; i < 16; i++) {
+                    if (this.gamepadButtons[i] && this.gamepadMapping[i]) sysvia.keyUpRaw(this.gamepadMapping[i]);
+                }
+                for (let i = 0; i < 4; i++) {
+                    const key = this.gamepadAxisMapping[i][this.gamepadAxes[i]];
+                    if (key) sysvia.keyUpRaw(key);
+                }
+            }
+            // Ignore an idle first controller. The first deliberate press or
+            // direction chooses the BBC controller, even at a sparse index.
+            selected = [...gamepads].find(
+                (pad) =>
+                    pad?.connected &&
+                    (pad.buttons?.some((button) => button.pressed) || pad.axes?.some((axis) => Math.abs(axis) >= 0.6)),
+            );
+            this.selectedIndex = selected?.index ?? null;
+            if (selected) {
+                this.gamepadButtons = Array(16).fill(false);
                 this.gamepadAxes = [0, 0, 0, 0];
             }
         }
+        this.gamepad0 = selected ?? null;
 
         // process gamepad buttons
         if (this.gamepad0) {
-            // these two lines needed in Chrome to update state, not Firefox
-            if (!isFirefox()) {
-                this.gamepad0 = navigator.getGamepads()[0];
-            }
-
             for (let i = 0; i < 4; i++) {
-                const axisRaw = this.gamepad0.axes[i];
+                const axisRaw = this.gamepad0.axes[i] ?? 0;
 
                 // Mike's XBox 360 controller, zero positions
                 // console.log(i, axisRaw, axis);
