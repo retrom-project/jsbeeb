@@ -57,6 +57,17 @@ describe("MediaResolver", () => {
         expect(load).toHaveBeenLastCalledWith("file:///tmp/b.ssd");
     });
 
+    it("loads a session blob with the original media extension", async () => {
+        const reference = "blob:http://localhost/7a9c#Welcome.ssd";
+        const { resolver, load } = make({ [reference]: bytes("disc") });
+        expect(await resolver.resolve("disc", reference)).toEqual({
+            name: "Welcome.ssd",
+            data: bytes("disc"),
+            ignored: [],
+        });
+        expect(load).toHaveBeenCalledWith(reference);
+    });
+
     it("opens a zip once, wherever it came from, and names what it passed over", async () => {
         const zip = await zipOf([
             ["side1.ssd", "one"],

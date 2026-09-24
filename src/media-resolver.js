@@ -28,6 +28,7 @@ export const Schemas = Object.freeze({
     http: { route: "url", phrase: "the web" },
     https: { route: "url", phrase: "the web" },
     file: { route: "url", phrase: "a file" },
+    blob: { route: "url", phrase: "this session" },
 });
 
 /** How a reference is served; a schema this page does not know is read as a folder name. */
@@ -80,7 +81,12 @@ export class MediaResolver {
                 return unzipDiscImage(stringToUint8Array(atob(image)));
             case "url":
                 // The URL may end in query parameters, which would upset the extension check.
-                return openIfZip(new URL(ref).pathname.split("/").pop(), await this.load(ref));
+                return openIfZip(
+                    ref.startsWith("blob:")
+                        ? decodeURIComponent(new URL(ref).hash.slice(1)) || "disk.ssd"
+                        : new URL(ref).pathname.split("/").pop(),
+                    await this.load(ref),
+                );
             default:
                 return openIfZip(image, await this.load(`${folder}/${image}`));
         }

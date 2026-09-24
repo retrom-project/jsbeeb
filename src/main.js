@@ -42,6 +42,7 @@ import { MachineSwitch } from "./web/machine-switch.js";
 import { PageActions } from "./web/page-actions.js";
 import { parseMediaParams, processAutobootParams, processDriveTrackParams, processInputParams } from "./url-params.js";
 import { hostKeyCodes, userKeymap } from "./keymap.js";
+import { createRetromBridge } from "./retrom-bridge.js";
 
 installIcons();
 
@@ -395,6 +396,17 @@ const startPromise = machine.start({
         await snapshots.restorePendingState();
 
         loop.go();
+        if (parsedQuery.retrom === "1") {
+            window.RetromJsbeeb = createRetromBridge({
+                processor,
+                model,
+                media,
+                snapshots,
+                loop,
+                video,
+                canvas: screenCanvas,
+            });
+        }
     } catch (error) {
         console.error("Error initialising emulator:", error);
         modals.showError("initialising", error);

@@ -82,6 +82,7 @@ export class UrlState {
         this.history = history;
         this.paramTypes = paramTypes;
         this.baseUrl = location.origin + location.pathname;
+        this.retromFragment = !location.search && new URLSearchParams(location.hash.substring(1)).get("retrom") === "1";
         // Parameters may be given after the hash as well as in the query.
         const queryString = location.search.substring(1) + "&" + location.hash.substring(1);
         this.params = parseQueryString(queryString, paramTypes);
@@ -90,12 +91,17 @@ export class UrlState {
 
     /** The page's URL with the parameters as they are now. */
     url() {
-        return buildUrlFromParams(this.baseUrl, this.params, this.paramTypes);
+        return this.formatUrl(this.params);
     }
 
     /** The page's URL with some parameters changed, leaving `params` as it is. */
     urlWith(overrides) {
-        return buildUrlFromParams(this.baseUrl, { ...this.params, ...overrides }, this.paramTypes);
+        return this.formatUrl({ ...this.params, ...overrides });
+    }
+
+    formatUrl(params) {
+        const url = buildUrlFromParams(this.baseUrl, params, this.paramTypes);
+        return this.retromFragment ? url.replace("?", "#") : url;
     }
 
     /**

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "forkRepository": "https://github.com/retrom-project/jsbeeb",
+  "defaultBranch": "retrom/gc4839b888af2",
+  "upstreamMirrorBranch": "main",
+  "upstreams": [
+    {
+      "role": "core",
+      "repository": "https://github.com/mattgodbolt/jsbeeb",
+      "refType": "COMMIT",
+      "ref": "c4839b888af29777390a5534f69d8ef8189bbed9",
+      "commit": "c4839b888af29777390a5534f69d8ef8189bbed9"
+    }
+  ],
+  "adapterAbi": "jsbeeb-web-v1",
+  "releaseAssets": ["jsbeeb-site.tar.gz", "LICENSE", "source.tar.gz", "rpg-runtime-release.json"]
+}

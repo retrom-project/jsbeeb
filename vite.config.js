@@ -1,6 +1,7 @@
 import { configDefaults, defineConfig } from "vitest/config";
 import { firShaderPlugin } from "./tools/vite-plugin-fir-shader.js";
 import { workersFor } from "./tools/test-workers.js";
+import { offlineThemePlugin } from "./tools/vite-plugin-offline-theme.js";
 
 // Every run in a GitHub Actions job appends to one summary page, so the suites need headings of
 // their own. The title is a root option rather than a per-project one, so the workflow names each
@@ -10,7 +11,7 @@ const JobSummaryTitle = process.env.VITEST_JOB_SUMMARY_TITLE;
 /** @type {import("vite").UserConfig} */
 export default defineConfig({
     base: "./", // Use relative paths for Electron compatibility
-    plugins: [firShaderPlugin()],
+    plugins: [firShaderPlugin(), offlineThemePlugin()],
     build: {
         sourcemap: true,
         // Prevent inlining; we don't want any worklets/audio workers to be inlined as that doesn't work.
